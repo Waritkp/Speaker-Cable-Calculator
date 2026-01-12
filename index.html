@@ -90,7 +90,7 @@
         return impedance * AWG_TABLE[awg];
     }
 
-    function recommendedAWG(impedance, length) {
+    function recommendedAWG(length, impedance) {
         const A = length / impedance;
         let awg;
 
