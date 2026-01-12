@@ -90,7 +90,7 @@
         return impedance * AWG_TABLE[awg];
     }
 
-    function recommendedAWG(length, impedance) {
+    function recommendedAWG(impedance, length) {
         const A = length / impedance;
         let awg;
 
@@ -141,8 +141,8 @@
                 resultDiv.innerHTML = `Cable Length = ${L.toFixed(2)} m`;
 
             } else {
-                const L = parseFloat(document.getElementById("length").value);
                 const Z = parseFloat(document.getElementById("impedance").value);
+                const L = parseFloat(document.getElementById("length").value);
 
                 const res = recommendedAWG(L, Z);
                 resultDiv.innerHTML =
