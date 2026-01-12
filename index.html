@@ -5,14 +5,10 @@
     <title>Speaker Cable Calculator</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: "Courier New", Arial;
             max-width: 600px;
             margin: auto;
-            padding: 20px;
-        }
-        h2 {
-            border-bottom: 2px solid #ddd;
-            padding-bottom: 5px;
+            padding: 30px;
         }
         label {
             display: block;
@@ -30,19 +26,19 @@
         .result {
             margin-top: 15px;
             padding: 10px;
-            background: #f2f2f2;
+            background: #EDF1F7;
         }
     </style>
 </head>
 <body>
 
-<h1>Cable Length & AWG Calculator</h1>
+<h1>Speaker Cable Calculator</h1>
 
 <label>Calculation Mode</label>
 <select id="mode" onchange="updateUI()">
-    <option value="power">Cable length from Power</option>
-    <option value="impedance">Cable length from Impedance</option>
-    <option value="recommend">Recommend AWG</option>
+    <option value="Hi-Z">Cable length for Hi-Z</option>
+    <option value="Lo-Z">Cable length for Lo-Z</option>
+    <option value="recommend">Recommended AWG</option>
 </select>
 
 <div id="awgSelect">
@@ -60,7 +56,7 @@
     <input type="number" id="power" step="any">
 
     <label>Voltage [V]</label>
-    <input type="number" id="voltage" step="any" value="100">
+    <input type="number" id="voltage" step="any" value="100" readonly>
 </div>
 
 <div id="impedanceInput">
@@ -68,7 +64,7 @@
     <input type="number" id="impedance" step="any">
 </div>
 
-<div id="lengthInput" style="display:none;">
+<div id="CableLength" style="display:none;">
     <label>Cable Length [m]</label>
     <input type="number" id="length" step="any">
 </div>
@@ -85,12 +81,12 @@
         18: 0.75
     };
 
-    function cableLengthFromPower(awg, power, voltage) {
+    function CableLengthForHiZ(awg, power, voltage) {
         const Z = (voltage ** 2) / power;
         return Z * AWG_TABLE[awg];
     }
 
-    function cableLengthFromImpedance(awg, impedance) {
+    function CableLengthForLoZ(awg, impedance) {
         return impedance * AWG_TABLE[awg];
     }
 
@@ -103,7 +99,7 @@
         else if (A <= 1.5) awg = 16;
         else if (A <= 2.5) awg = 14;
         else if (A <= 4.0) awg = 12;
-        else awg = "BIGGER THAN AWG12";
+        else if (A > 4.0) awg = "BIGGER THAN AWG12";
 
         return { area: A, awg: awg };
     }
@@ -134,14 +130,14 @@
                 const power = parseFloat(document.getElementById("power").value);
                 const voltage = parseFloat(document.getElementById("voltage").value);
 
-                const L = cableLengthFromPower(awg, power, voltage);
+                const L = CableLengthForHiZ(awg, power, voltage);
                 resultDiv.innerHTML = `Cable Length = ${L.toFixed(2)} m`;
 
             } else if (mode === "impedance") {
                 const awg = document.getElementById("awg").value;
                 const Z = parseFloat(document.getElementById("impedance").value);
 
-                const L = cableLengthFromImpedance(awg, Z);
+                const L = CableLengthForLoZ(awg, Z);
                 resultDiv.innerHTML = `Cable Length = ${L.toFixed(2)} m`;
 
             } else {
