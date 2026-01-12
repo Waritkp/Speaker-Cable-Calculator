@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cable & AWG Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+        }
+        h2 {
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 5px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+        }
+        button {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 10px;
+            background: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Cable Length & AWG Calculator</h1>
+
+<label>Calculation Mode</label>
+<select id="mode" onchange="updateUI()">
+    <option value="power">Cable length from Power</option>
+    <option value="impedance">Cable length from Impedance</option>
+    <option value="recommend">Recommend AWG</option>
+</select>
+
+<div id="awgSelect">
+    <label>AWG Size</label>
+    <select id="awg">
+        <option value="12">12</option>
+        <option value="14">14</option>
+        <option value="16">16</option>
+        <option value="18">18</option>
+    </select>
+</div>
+
+<div id="powerInputs">
+    <label>Power [W]</label>
+    <input type="number" id="power" step="any">
+
+    <label>Voltage [V]</label>
+    <input type="number" id="voltage" step="any" value="100">
+</div>
+
+<div id="impedanceInput">
+    <label>Impedance [Ohms]</label>
+    <input type="number" id="impedance" step="any">
+</div>
+
+<div id="lengthInput" style="display:none;">
+    <label>Cable Length [m]</label>
+    <input type="number" id="length" step="any">
+</div>
+
+<button onclick="calculate()">Calculate</button>
+
+<div class="result" id="result"></div>
+
+<script>
+    const AWG_TABLE = {
+        12: 4.0,
+        14: 2.5,
+        16: 1.5,
+        18: 0.75
+    };
+
+    function cableLengthFromPower(awg, power, voltage) {
+        const Z = (voltage ** 2) / power;
+        return Z * AWG_TABLE[awg];
+    }
+
+    function cableLengthFromImpedance(awg, impedance) {
+        return impedance * AWG_TABLE[awg];
+    }
+
+    function recommendedAWG(length, impedance) {
+        const A = length / impedance;
+        let awg;
+
+        if (A < 0.5) awg = "AWG20 or above";
+        else if (A <= 0.75) awg = 18;
+        else if (A <= 1.5) awg = 16;
+        else if (A <= 2.5) awg = 14;
+        else if (A <= 4.0) awg = 12;
+        else awg = "BIGGER THAN AWG12";
+
+        return { area: A, awg: awg };
+    }
+
+    function updateUI() {
+        const mode = document.getElementById("mode").value;
+
+        document.getElementById("powerInputs").style.display =
+            mode === "power" ? "block" : "none";
+
+        document.getElementById("impedanceInput").style.display =
+            mode !== "power" ? "block" : "none";
+
+        document.getElementById("awgSelect").style.display =
+            mode === "recommend" ? "none" : "block";
+
+        document.getElementById("lengthInput").style.display =
+            mode === "recommend" ? "block" : "none";
+    }
+
+    function calculate() {
+        const mode = document.getElementById("mode").value;
+        const resultDiv = document.getElementById("result");
+
+        try {
+            if (mode === "power") {
+                const awg = document.getElementById("awg").value;
+                const power = parseFloat(document.getElementById("power").value);
+                const voltage = parseFloat(document.getElementById("voltage").value);
+
+                const L = cableLengthFromPower(awg, power, voltage);
+                resultDiv.innerHTML = `Cable Length = ${L.toFixed(2)} m`;
+
+            } else if (mode === "impedance") {
+                const awg = document.getElementById("awg").value;
+                const Z = parseFloat(document.getElementById("impedance").value);
+
+                const L = cableLengthFromImpedance(awg, Z);
+                resultDiv.innerHTML = `Cable Length = ${L.toFixed(2)} m`;
+
+            } else {
+                const L = parseFloat(document.getElementById("length").value);
+                const Z = parseFloat(document.getElementById("impedance").value);
+
+                const res = recommendedAWG(L, Z);
+                resultDiv.innerHTML =
+                    `Area = ${res.area.toFixed(2)} mm²<br>Recommended AWG: ${res.awg}`;
+            }
+        } catch (err) {
+            resultDiv.innerHTML = "Invalid input";
+        }
+    }
+
+    updateUI();
+</script>
+
+</body>
+</html>
