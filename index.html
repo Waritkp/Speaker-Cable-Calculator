@@ -108,10 +108,10 @@
         const mode = document.getElementById("mode").value;
 
         document.getElementById("powerInputs").style.display =
-            mode === "power" ? "block" : "none";
+            mode === "Hi-Z" ? "block" : "none";
 
         document.getElementById("impedanceInput").style.display =
-            mode !== "power" ? "block" : "none";
+            mode !== "Lo-Z" ? "block" : "none";
 
         document.getElementById("awgSelect").style.display =
             mode === "recommend" ? "none" : "block";
