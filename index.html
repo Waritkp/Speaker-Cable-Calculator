@@ -26,7 +26,7 @@
         .result {
             margin-top: 15px;
             padding: 10px;
-            background: #EDF1F7;
+            background: #F2F2F2;
         }
     </style>
 </head>
@@ -116,7 +116,7 @@
         document.getElementById("awgSelect").style.display =
             mode === "recommend" ? "none" : "block";
 
-        document.getElementById("lengthInput").style.display =
+        document.getElementById("CableLength").style.display =
             mode === "recommend" ? "block" : "none";
     }
 
@@ -125,7 +125,7 @@
         const resultDiv = document.getElementById("result");
 
         try {
-            if (mode === "power") {
+            if (mode === "Hi-Z") {
                 const awg = document.getElementById("awg").value;
                 const power = parseFloat(document.getElementById("power").value);
                 const voltage = parseFloat(document.getElementById("voltage").value);
@@ -133,7 +133,7 @@
                 const L = CableLengthForHiZ(awg, power, voltage);
                 resultDiv.innerHTML = `Cable Length = ${L.toFixed(2)} m`;
 
-            } else if (mode === "impedance") {
+            } else if (mode === "Lo-Z") {
                 const awg = document.getElementById("awg").value;
                 const Z = parseFloat(document.getElementById("impedance").value);
 
